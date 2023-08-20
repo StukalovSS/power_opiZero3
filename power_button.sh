@@ -36,6 +36,8 @@ do
         is_safe=$(echo "$hotend_temp < $safe_temp" | bc -l)
         echo $hotend_temp $is_safe
         [ $is_safe -eq 1 ] && break
+
+        #enable poweroff if no moonraker service running
         [ -z $is_safe ] && break
 done
 
