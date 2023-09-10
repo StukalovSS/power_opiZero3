@@ -38,6 +38,7 @@
 ## быстрая установка 
 
 ```bash
+sudo apt install gpiod
 git clone https://github.com/evgs/power_opi3lts
 cd power_opi3lts
 ./install.sh
