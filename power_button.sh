@@ -15,7 +15,7 @@ if [ `gpioget -B pull-up $gpiochip $pin` -eq 1 ]; then
         >&2 echo "Button should not be pressed so early, potential wiring problem"
         exit 1
 fi;
-if [ $? ]; then
+if [ $? -ne 0 ]; then
         >&2 echo "Permission problems, run this script as root user or modify priveleges for run gpioget"
         exit 1
 fi;
