@@ -23,23 +23,29 @@ do
         sleep 0.2
         [ `gpioget -B pull-up $gpiochip $pin` -eq 0 ] && continue
 
-        echo "button event"
+        echo "1. button event"
 
         # ready to poweroff in klipper shutdown state
-        curl -s http://127.0.0.1:7125/printer/objects/query?webhooks | jq -M .result.status.webhooks.state | grep -q shutdown && break
+        curl -s http://127.0.0.1:7125/printer/objects/query?webhooks | jq -M .result.status.webhooks.state | grep -q shutdown && echo "2. klipper not runnung" && break
+
+        echo "3. klipper is running"
 
         # prevent poweroff if printing
-        curl -s http://127.0.0.1:7125/printer/objects/query?print_stats | jq -M .result.status.print_stats.state | grep -q printing && continue
+        curl -s http://127.0.0.1:7125/printer/objects/query?print_stats | jq -M .result.status.print_stats.state | grep -q printing && echo "4. still printing, NOT shutdown" && continue
+
+        echo "5. no printing task"
 
         #prevent poweroff if hotend is hot
         hotend_temp=`curl -s http://127.0.0.1:7125/printer/objects/query?extruder | jq .result.status.extruder.temperature`
         is_safe=$(echo "$hotend_temp < $safe_temp" | bc -l)
         echo $hotend_temp $is_safe
-        [ $is_safe -eq 1 ] && break
+        [ $is_safe -eq 1 ] && echo "6. safe hotend temp" && break
 
         #enable poweroff if no moonraker service running
-        [ -z $is_safe ] && break
+        [ -z $is_safe ] && echo "7. No moonraker service running" && break
 done
+
+echo "shutdown now"
 
 sudo poweroff
 
