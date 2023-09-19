@@ -39,6 +39,7 @@
 
 ```bash
 sudo apt install gpiod
+cd ~
 git clone https://github.com/evgs/power_opi3lts
 cd power_opi3lts
 ./install.sh
